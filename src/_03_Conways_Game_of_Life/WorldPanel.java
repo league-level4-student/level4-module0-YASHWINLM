@@ -19,7 +19,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	private Timer timer;
 	
 	//1. Create a 2D array of Cells. Do not initialize it.
-
+	Cell [][] CellArray;
 	
 	
 	public WorldPanel(int w, int h, int cpr) {
@@ -29,25 +29,47 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		this.cellsPerRow = cpr;
 	
 		//2. Calculate the cell size.
-		
+		cellSize= (w*h)/cpr;
 		//3. Initialize the cell array to the appropriate size.
+		
+		CellArray= new Cell [cpr][cpr];
 		
 		//3. Iterate through the array and initialize each cell.
 		//   Don't forget to consider the cell's dimensions when 
 		//   passing in the location.
-		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				Cell c = new Cell(w/cpr,h/cpr, cellSize);
+			}
+		}
 	}
 	
 	public void randomizeCells() {
+		Random rand = new Random();
+
+		int  n = rand.nextInt(2) + 1;
 		//4. Iterate through each cell and randomly set each
 		//   cell's isAlive memeber to true of false
-		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				if (n==1) {
+					CellArray[i][j].isAlive=true;
+				}
+				else {
+					CellArray[i][j].isAlive=false;
+				}
+			}
+		}
 		repaint();
 	}
 	
 	public void clearCells() {
 		//5. Iterate through the cells and set them all to dead.
-		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				CellArray[i][j].isAlive=false;
+			}
+		}
 		repaint();
 	}
 	
@@ -66,7 +88,11 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	@Override
 	public void paintComponent(Graphics g) {
 		//6. Iterate through the cells and draw them all
-		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				CellArray[i][j].draw(g);
+			}
+		}
 		
 		
 		// draws grid
@@ -80,9 +106,30 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// . using the getLivingNeighbors method.
 		int[][] livingNeighbors = new int[cellsPerRow][cellsPerRow];
 		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				livingNeighbors[i][j] = getLivingNeighbors(CellArray[i][j].getX(), CellArray[i][j].getY());
+			}
+		}
+		
 		//8. check if each cell should live or die
 	
-		
+		for (int i = 0; i < CellArray.length; i++) {
+			for (int j = 0; j < CellArray[i].length; j++) {
+				if (livingNeighbors[i][j]>3) {
+					CellArray[i][j].isAlive=false;
+				}
+				else if (livingNeighbors[i][j]<2) {
+					CellArray[i][j].isAlive=false;
+				}
+				else if (livingNeighbors[i][j]==2||livingNeighbors[i][j]==2) {
+					CellArray[i][j].isAlive=true;
+				}
+				else if (CellArray[i][j].isAlive=false && livingNeighbors[i][j]==3) {
+					CellArray[i][j].isAlive=true;
+				}
+			}
+		}
 		
 		
 		repaint();
